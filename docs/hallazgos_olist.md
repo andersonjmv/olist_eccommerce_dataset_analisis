@@ -1,4 +1,3 @@
-
 # Diagnóstico de Retrasos y Reputación — Marketplace Olist (Brasil)
 
 ## Contexto y pregunta de negocio
@@ -78,9 +77,30 @@ actualizó su calificación en un momento posterior. Se resolvió quedándose
 con la reseña más reciente por pedido para cualquier análisis que cruce
 `orders` con `order_reviews`.
 
+
+## Hallazgo 6: el cuello de botella real es el transportador, no el vendedor
+
+Descomponiendo el tiempo de entrega en 2 tramos (vendedor: compra → entrega
+al transportador; transportador: entrega al transportador → entrega al
+cliente), ambos tramos se alargan en pedidos que llegan tarde, pero en
+magnitudes muy distintas:
+
+| Tramo         | Promedio (a tiempo) | Promedio (tarde) | T-statistic     |
+| ------------- | ------------------- | ---------------- | --------------- |
+| Transportador | 7.93 días          | 27.34 días      | **95.26** |
+| Vendedor      | 3.01 días          | 6.05 días       | 32.28           |
+
+El transportador muestra una asociación con el retraso casi 3 veces más
+fuerte que el vendedor (comparando magnitud del t-statistic), ambos con
+p ≈ 0. Esto indica que el cuello de botella operativo real está en el
+tramo de transporte físico, no en la velocidad de despacho de los
+vendedores — un hallazgo relevante porque contradice la suposición
+intuitiva de que la demora de un marketplace suele originarse en el
+vendedor individual.
+
 ## Próximos pasos de análisis (confirmados, pendientes de ejecutar)
 
-- [ ] **Cuello de botella real**: descomponer el tiempo total de entrega en
+- [X] **Cuello de botella real**: descomponer el tiempo total de entrega en
   "tiempo del vendedor en despachar" (compra → entrega al
   transportador) vs. "tiempo del transportador" (entrega al
   transportador → entrega al cliente), para identificar cuál de los
